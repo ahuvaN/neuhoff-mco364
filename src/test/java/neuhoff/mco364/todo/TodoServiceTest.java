@@ -5,8 +5,8 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.List;
 
-import neuhoff.mco364.ToDoService;
-import neuhoff.mco364.Todo;
+import neuhoff.todo.ToDoService;
+import neuhoff.todo.Todo;
 
 import org.junit.Test;
 
