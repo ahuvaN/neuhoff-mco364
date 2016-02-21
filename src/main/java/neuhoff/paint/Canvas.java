@@ -1,8 +1,6 @@
 package neuhoff.paint;
 
-import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -20,7 +18,7 @@ public class Canvas extends JPanel {
 	public Canvas() {
 
 		this.buffer = new BufferedImage(800, 800, BufferedImage.TYPE_INT_ARGB);
-		tool = new LineTool();
+		tool = new OvalTool();
 
 		this.addMouseListener(new MouseListener() {
 

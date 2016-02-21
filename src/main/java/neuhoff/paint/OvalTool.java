@@ -3,7 +3,7 @@ package neuhoff.paint;
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class LineTool implements Tool {
+public class OvalTool implements Tool {
 
 	private int x1;
 	private int y1;
@@ -13,7 +13,7 @@ public class LineTool implements Tool {
 	@Override
 	public void mousePressed(Graphics g, int x, int y) {
 		g.setColor(Color.BLACK);
-		g.fillOval(x, y, 1, 1);
+		g.drawOval(x, y, 1, 1);
 		x1 = x;
 		y1 = y;	
 		x2 = x;
@@ -23,7 +23,7 @@ public class LineTool implements Tool {
 	@Override
 	public void mouseReleased(Graphics g, int x, int y) {
 		g.setColor(Color.BLACK);
-		g.drawLine(x1, y1, x, y);
+		g.drawOval(x1, y1, x, y);
 		
 	}
 
@@ -36,7 +36,7 @@ public class LineTool implements Tool {
 	@Override
 	public void drawPreview(Graphics g) {
 		g.setColor(Color.BLACK);
-		g.drawLine(x1, y1, x2, y2);
+		g.drawOval(x1, y1, x2, y2);
 	
 	}
 
