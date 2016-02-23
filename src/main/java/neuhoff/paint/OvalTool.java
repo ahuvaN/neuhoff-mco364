@@ -2,6 +2,7 @@ package neuhoff.paint;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 
 public class OvalTool implements Tool {
 
@@ -11,7 +12,7 @@ public class OvalTool implements Tool {
 	private int y2;
 	
 	@Override
-	public void mousePressed(Graphics g, int x, int y) {
+	public void mousePressed(Graphics g, int x, int y, BufferedImage buffer) {
 		g.setColor(Color.BLACK);
 		g.drawOval(x, y, 1, 1);
 		x1 = x;
@@ -21,14 +22,14 @@ public class OvalTool implements Tool {
 	}
 
 	@Override
-	public void mouseReleased(Graphics g, int x, int y) {
+	public void mouseReleased(Graphics g, int x, int y, BufferedImage buffer) {
 		g.setColor(Color.BLACK);
 		g.drawOval(x1, y1, x, y);
 		
 	}
 
 	@Override
-	public void mouseDragged(Graphics g, int x, int y) {
+	public void mouseDragged(Graphics g, int x, int y, BufferedImage buffer) {
 		x2 = x;
 		y2 = y;
 	}
