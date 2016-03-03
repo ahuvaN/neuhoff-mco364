@@ -1,66 +1,69 @@
 package neuhoff.paint;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class BucketTool implements Tool {
 
-	private boolean[][] mark;
+	private BufferedImage img;
 	private Color color;
-
-	@Override
-	public void mousePressed(Graphics g, int x, int y, BufferedImage buffer) {
-		mark = new boolean[buffer.getHeight()][buffer.getWidth()];
-
+	private Graphics2D g;
+	
+	public BucketTool(BufferedImage image){
+		img = image;
 	}
 
 	@Override
-	public void mouseReleased(Graphics g, int x, int y, BufferedImage buffer) {
-		for (int row = 0; row < buffer.getHeight(); row++) {
-            for (int col = 0; col < buffer.getWidth(); col++) {
-                flood(buffer, row, col,
-                      g.getColor(), color);	
-                }
-            }
+	public void mousePressed(Graphics2D graphics, int x, int y, int stroke) {
+		int bkgd = img.getRGB(x, y);
+		bucketFill(bkgd, x, y);
+	}
+
+	private void bucketFill(int bkgd, int x, int y) {
+		Queue<Point> queue = new LinkedList<Point>();
+		queue.add(new Point(x, y));
+
+		while (!queue.isEmpty()) {
+			Point p = queue.remove();
+			x = p.getX();
+			y = p.getY();
+			if (x > 0 && y > 0 && x < img.getWidth() && y < img.getHeight()
+					&& bkgd == img.getRGB(x, y)) {
+				
+				img.setRGB(x, y, color.getRGB());
+
+				queue.add(new Point(x + 1, y));
+				queue.add(new Point(x - 1, y));
+				queue.add(new Point(x, y + 1));
+				queue.add(new Point(x, y - 1));
+			}
+		}		
 	}
 
 	@Override
-	public void mouseDragged(Graphics g, int x, int y, BufferedImage buffer) {
+	public void mouseReleased(int x, int y) {
+		
 	}
 
 	@Override
-	public void drawPreview(Graphics g) {
+	public void mouseDragged(int x, int y) {
+	}
+
+	@Override
+	public void drawPreview(Graphics2D g) {
 	}
 	
 	public void setColor(Color c){
 		color = c;
 	}
 
-	private void flood(BufferedImage img, int row, int col,
-			Color srcColor, Color tgtColor) {
-		// make sure row and col are inside the image
-		if (row < 0 || col < 0 || row >= img.getHeight() || col >= img.getWidth())
-			return;
-
-		// make sure this pixel hasn't been visited yet
-		if (mark[row][col])
-			return;
-
-		// make sure this pixel is the right color to fill
-		if (!(img.getRGB(col, row) == srcColor.getAlpha()))
-			return;
-
-		// fill pixel with target color and mark it as visited
-		img.setRGB(col, row, color.getAlpha());
-		mark[row][col] = true;
-
-		// recursively fill surrounding pixels
-		// (this is equivelant to depth-first search)
-		flood(img, row - 1, col, srcColor, color);
-		flood(img, row + 1, col, srcColor, color);
-		flood(img, row, col - 1, srcColor, color);
-		flood(img, row, col + 1, srcColor, color);
+	@Override
+	public void setStroke(BasicStroke basicStroke) {
 	}
 
+	
 }
