@@ -1,12 +1,13 @@
 package neuhoff.paint;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -20,11 +21,9 @@ import javax.swing.JPanel;
 public class PaintFrame extends JFrame {
 
 	private Canvas canvas;
-	private JButton pencil, line, square, oval, bucket, undo, redo, color, one,
-			two, three, four, prevTool, lastStroke;
-	private Color clr;
+	private JButton undo, redo, color, one,	two, three, four;
 	private JColorChooser chooser;
-	private int strokenum;
+	private PaintProperties properties;
 
 	public PaintFrame() {
 
@@ -34,56 +33,62 @@ public class PaintFrame extends JFrame {
 
 		setLayout(new BorderLayout());
 
+		properties = new PaintProperties(900, 700, Color.BLACK, 0,
+				false, new BufferedImage(900, 800,
+						BufferedImage.TYPE_INT_ARGB), new BasicStroke(1));
 		chooser = new JColorChooser();
-		clr = Color.BLACK;
-		
-		canvas = new Canvas(this);
-		canvas.setColor(clr);
+		properties.setColor(Color.BLACK);
+
+		canvas = new Canvas(properties);
 		add(canvas, BorderLayout.CENTER);
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new FlowLayout());
 		add(panel, BorderLayout.PAGE_START);
-		
+
 		JPanel stroke = new JPanel();
 		stroke.setLayout(new BoxLayout(stroke, BoxLayout.Y_AXIS));
 
 		Dimension d = new Dimension(90, 100);
-		prevTool = pencil = new JButton(new ImageIcon(new ImageIcon("pencil.png")
-				.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
-		pencil.setPreferredSize(d);
-		pencil.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
-		line = new JButton(new ImageIcon(new ImageIcon("line.png").getImage()
-				.getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
-		line.setPreferredSize(d);
-		square = new JButton(new ImageIcon(new ImageIcon("square.png")
-				.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
-		square.setPreferredSize(d);
-		oval = new JButton(new ImageIcon(new ImageIcon("circle.png").getImage()
-				.getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
-		oval.setPreferredSize(d);
-		bucket = new JButton(new ImageIcon(new ImageIcon("bucket.png")
-				.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
-		bucket.setPreferredSize(d);
-		undo = new JButton(new ImageIcon(new ImageIcon("undo.png").getImage()
-				.getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
+		
+		ActionListener listener = new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				ToolButton button = (ToolButton) event.getSource();
+				canvas.setTool(button.getTool());
+			}
+		};
+		
+		ToolButton buttons[] = new ToolButton[] {
+				new ToolButton(new PencilTool(properties), "/pencil.png"),
+				new ToolButton(new LineTool(properties), "/line.png"),
+				new ToolButton(new SquareTool(properties), "/square.png"),
+				new ToolButton(new OvalTool(properties), "/circle.png"),
+				new ToolButton(new BucketTool(properties), "/bucket.png"),
+		};
+		
+		for (ToolButton button: buttons){
+			panel.add(button);
+			button.addActionListener(listener);
+		}
+		
+		undo = new JButton(new ImageIcon(getClass().getResource(
+				("/undo.png"))));
 		undo.setPreferredSize(d);
-		redo = new JButton(new ImageIcon(new ImageIcon("redo.png").getImage()
-				.getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
+		redo = new JButton(new ImageIcon(getClass().getResource(
+				("/redo.png"))));
 		redo.setPreferredSize(d);
-		color = new JButton(new ImageIcon(new ImageIcon("color.png").getImage()
-				.getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
+		color = new JButton(new ImageIcon(getClass().getResource(
+				("/color.png"))));
 		color.setPreferredSize(d);
 
 		d = new Dimension(90, 25);
-		lastStroke = one = new JButton(new ImageIcon("1.png"));
+		one = new JButton(new ImageIcon(getClass().getResource("/1.png")));
 		one.setPreferredSize(d);
-		one.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
-		two = new JButton(new ImageIcon("2.png"));
+		two = new JButton(new ImageIcon(getClass().getResource("/2.png")));
 		two.setPreferredSize(d);
-		three = new JButton(new ImageIcon("3.png"));
+		three = new JButton(new ImageIcon(getClass().getResource("/3.png")));
 		three.setPreferredSize(d);
-		four = new JButton(new ImageIcon("4.png"));
+		four = new JButton(new ImageIcon(getClass().getResource("/4.png")));
 		four.setPreferredSize(d);
 
 		stroke.add(one);
@@ -91,11 +96,6 @@ public class PaintFrame extends JFrame {
 		stroke.add(three);
 		stroke.add(four);
 
-		panel.add(pencil);
-		panel.add(line);
-		panel.add(square);
-		panel.add(oval);
-		panel.add(bucket);
 		panel.add(undo);
 		panel.add(redo);
 		panel.add(color);
@@ -103,127 +103,58 @@ public class PaintFrame extends JFrame {
 
 		setVisible(true);
 
-		pencil.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				canvas.setTool(new PencilTool());
-				prevTool.setBorder(BorderFactory.createEmptyBorder());
-				pencil.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
-				prevTool = pencil;
-			}
-		});
-
-		line.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				canvas.setTool(new LineTool());
-				prevTool.setBorder(BorderFactory.createEmptyBorder());
-				line.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
-				prevTool = line;
-			}
-		});
-
-		oval.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				canvas.setTool(new OvalTool());
-				prevTool.setBorder(BorderFactory.createEmptyBorder());
-				oval.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
-				prevTool = oval;
-			}
-		});
-
-		square.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				canvas.setTool(new SquareTool());
-				prevTool.setBorder(BorderFactory.createEmptyBorder());
-				square.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
-				prevTool = square;
-			}
-		});
-
-		bucket.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				canvas.setTool(new BucketTool(canvas.getBuffer()));
-				prevTool.setBorder(BorderFactory.createEmptyBorder());
-				bucket.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
-				prevTool = bucket;
-			}
-		});
-
+			
 		undo.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				canvas.undo();
 			}
 		});
 
 		redo.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				canvas.redo();
 			}
 		});
 
 		color.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				chooser.setPreviewPanel(new JPanel());
-				JColorChooser.createDialog(canvas, "Choose a background", false,
-						chooser, new OKListener(), null).setVisible(true);
+				JColorChooser.createDialog(canvas, "Choose a background",
+						false, chooser, new OKListener(), null)
+						.setVisible(true);
 			}
 		});
 
 		one.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				canvas.setStroke(1);
-				lastStroke.setBorder(BorderFactory.createEmptyBorder());
-				one.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
-				lastStroke = one;
+				properties.setStroke(new BasicStroke(1));
 			}
 		});
-		
+
 		two.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				canvas.setStroke(2);
-				lastStroke.setBorder(BorderFactory.createEmptyBorder());
-				two.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
-				lastStroke = two;
+				properties.setStroke(new BasicStroke(2));
 			}
 		});
-		
+
 		three.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				canvas.setStroke(4);
-				lastStroke.setBorder(BorderFactory.createEmptyBorder());
-				three.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
-				lastStroke = three;
+				properties.setStroke(new BasicStroke(4));
 			}
 		});
-		
+
 		four.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				canvas.setStroke(6);
-				lastStroke.setBorder(BorderFactory.createEmptyBorder());
-				four.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
-				lastStroke = four;
+				properties.setStroke(new BasicStroke(6));
 			}
 		});
-		
+
 	}
 
 	@SuppressWarnings("serial")
 	private class OKListener extends AbstractAction {
-		@Override
 		public void actionPerformed(ActionEvent e) {
-			clr = chooser.getColor();
-			canvas.setColor(clr);
+			properties.setColor(chooser.getColor());
 		}
 	}
 

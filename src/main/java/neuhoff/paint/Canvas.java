@@ -1,11 +1,8 @@
 package neuhoff.paint;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -14,7 +11,6 @@ import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 import java.util.Stack;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class Canvas extends JPanel {
@@ -23,19 +19,17 @@ public class Canvas extends JPanel {
 
 	private Stack<BufferedImage> undo;
 	private Stack<BufferedImage> redo;
-	private BufferedImage buffer;
 	private Tool tool;
-	private Color color;
-	private int stroke = 1;
+	private BufferedImage img;
+	private PaintProperties properties;
 
-	public Canvas(JFrame frame) {
+	public Canvas(PaintProperties props) {
 
+		properties = props;
 		setBackground(Color.WHITE);
 		undo = new Stack<BufferedImage>();
 		redo = new Stack<BufferedImage>();
-		buffer = new BufferedImage(frame.getWidth(), frame.getHeight(),
-				BufferedImage.TYPE_INT_ARGB);
-		tool = new PencilTool();
+		tool = new PencilTool(properties);
 
 		this.addMouseListener(new MouseListener() {
 
@@ -50,15 +44,16 @@ public class Canvas extends JPanel {
 
 			public void mousePressed(MouseEvent e) {
 				undo.push(deepCopy());
-				tool.mousePressed((Graphics2D) buffer.getGraphics(), e.getX(),
-						e.getY(), stroke);
+				tool.mousePressed((Graphics2D) properties.getImage()
+						.getGraphics(), e.getX(), e.getY());
 				repaint();
 			}
 
 			private BufferedImage deepCopy() {
-				ColorModel cm = buffer.getColorModel();
+				img = properties.getImage();
+				ColorModel cm = img.getColorModel();
 				boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-				WritableRaster raster = buffer.copyData(buffer.getRaster()
+				WritableRaster raster = img.copyData(img.getRaster()
 						.createCompatibleWritableRaster());
 				return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
 			}
@@ -85,41 +80,36 @@ public class Canvas extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.drawImage(buffer, 0, 0, null);
+		g.drawImage(img, 0, 0, null);
 		tool.drawPreview((Graphics2D) g);
 
 	}
 
 	public void undo() {
 		if (!undo.isEmpty()) {
-			redo.push(buffer);
-			buffer = undo.pop();
+			redo.push(img);
+			img = undo.pop();
 			repaint();
-		}	}
+		}
+	}
 
 	public void redo() {
 		if (!redo.isEmpty()) {
-			undo.push(buffer);
-			buffer = redo.pop();
+			undo.push(img);
+			img = redo.pop();
 			repaint();
-		}	}
+		}
+	}
 
 	public BufferedImage getBuffer() {
-		return buffer;
-	}
-
-	public void setColor(Color c) {
-		color = c;
-		tool.setColor(color);
-	}
-	
-	public void setStroke(int val){
-		stroke = val;
-		tool.setStroke(new BasicStroke(stroke));
+		return img;
 	}
 
 	public void setTool(Tool newtool) {
 		tool = newtool;
-		tool.setColor(color);
+	}
+
+	public void setColor(Color color) {
+		properties.setColor(color);
 	}
 }

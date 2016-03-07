@@ -4,20 +4,21 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-public class PencilTool implements Tool {
+public class PencilTool extends Tool {
+
+	public PencilTool(PaintProperties prprties) {
+		super(prprties);
+	}
 
 	private int x;
 	private int y;
-	private Color color;
 	private Graphics2D g;
-	private BasicStroke b; 
 
 	@Override
-	public void mousePressed(Graphics2D graphics, int x, int y, int stroke) {
+	public void mousePressed(Graphics2D graphics, int x, int y) {
 		g = graphics;
-		b = new BasicStroke(stroke);
-		g.setStroke(b);
-		g.setColor(color);
+		g.setStroke(properties.getStroke());
+		g.setColor(properties.getColor());
 		g.fillOval(x, y, 1, 1);
 		this.x = x;
 		this.y = y;
@@ -31,7 +32,7 @@ public class PencilTool implements Tool {
 	@Override
 	public void mouseDragged(int x, int y) {
 
-		g.setColor(color);
+		g.setColor(properties.getColor());
 		g.drawLine(this.x, this.y, x, y);
 		this.x = x;
 		this.y = y;
@@ -42,15 +43,12 @@ public class PencilTool implements Tool {
 
 	}
 
-	@Override
 	public void setColor(Color c) {
-		color = c;
+		properties.setColor(c);
 	}
 
-	@Override
 	public void setStroke(BasicStroke stroke) {
-		b = stroke;
-		g.setStroke(b);		
+		properties.setStroke(stroke);
 	}
 
 }

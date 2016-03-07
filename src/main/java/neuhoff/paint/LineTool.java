@@ -5,22 +5,22 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-public class LineTool implements Tool {
+public class LineTool extends Tool {
 
 	private int x1;
 	private int y1;
 	private int x2;
 	private int y2;
-	private Color color;
 	private Graphics2D g;
-	private BasicStroke b;
 
+	public LineTool(PaintProperties properties){
+		super(properties);
+	}
 	@Override
-	public void mousePressed(Graphics2D graphics, int x, int y, int stroke) {
+	public void mousePressed(Graphics2D graphics, int x, int y) {
 		g = graphics;
-		b = new BasicStroke(stroke);
-		g.setStroke(b);
-		g.setColor(color);
+		g.setStroke(properties.getStroke());
+		g.setColor(properties.getColor());
 		g.fillOval(x, y, 1, 1);
 		x1 = x2 = x;
 		y1 = y2 = y;
@@ -28,7 +28,7 @@ public class LineTool implements Tool {
 
 	@Override
 	public void mouseReleased(int x, int y) {
-		g.setColor(color);
+		g.setColor(properties.getColor());
 		g.drawLine(x1, y1, x, y);
 
 	}
@@ -41,21 +41,19 @@ public class LineTool implements Tool {
 
 	@Override
 	public void drawPreview(Graphics2D g) {
-		g.setColor(color);
-		g.setStroke(b);
+		g.setColor(properties.getColor());
+		g.setStroke(properties.getStroke());
 		g.drawLine(x1, y1, x2, y2);
 
 	}
 
-	@Override
+	
 	public void setColor(Color c) {
-		color = c;
+		properties.setColor(c);
 	}
 
-	@Override
 	public void setStroke(BasicStroke stroke) {
-		b = stroke;
-		g.setStroke(b);
+		properties.setStroke(stroke);
 	}
 
 }
