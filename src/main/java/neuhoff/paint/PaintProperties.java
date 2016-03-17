@@ -4,6 +4,10 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+@Singleton
 public class PaintProperties {
 
 	private int width, height;
@@ -13,17 +17,16 @@ public class PaintProperties {
 	private BufferedImage image;
 	private BasicStroke stroke;
 	
-	//this is a singleton
-	public PaintProperties(int width, int height, Color color, int weight,
-			boolean fill, BufferedImage image, BasicStroke stroke) {
-		super();
-		this.width = width;
-		this.height = height;
-		this.color = color;
-		this.weight = weight;
-		this.fill = fill;
-		this.image = image;
-		this.stroke = stroke;
+@Inject
+public PaintProperties() {
+		this.width = 900;
+		this.height = 700;
+		this.color = Color.BLACK;
+		this.weight = 0;
+		this.fill = false;
+		this.image = new BufferedImage(900, 800,
+				BufferedImage.TYPE_INT_ARGB);
+		this.stroke = new BasicStroke(1);
 	}
 	
 	public int getWidth() {

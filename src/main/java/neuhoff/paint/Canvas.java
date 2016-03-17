@@ -13,6 +13,10 @@ import java.util.Stack;
 
 import javax.swing.JPanel;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+@Singleton
 public class Canvas extends JPanel {
 
 	private static final long serialVersionUID = 1L;
@@ -23,6 +27,7 @@ public class Canvas extends JPanel {
 	private BufferedImage img;
 	private PaintProperties properties;
 
+	@Inject
 	public Canvas(PaintProperties props) {
 
 		properties = props;
