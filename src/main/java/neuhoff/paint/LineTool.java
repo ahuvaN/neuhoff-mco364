@@ -13,8 +13,8 @@ public class LineTool extends Tool {
 	private int y2;
 	private Graphics2D g;
 
-	public LineTool(PaintProperties properties){
-		super(properties);
+	public LineTool(CanvasRepaintManager manager, PaintProperties properties){
+		super(manager, properties);
 	}
 	@Override
 	public void mousePressed(Graphics2D graphics, int x, int y) {

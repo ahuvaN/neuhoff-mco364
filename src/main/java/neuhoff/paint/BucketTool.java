@@ -10,8 +10,8 @@ public class BucketTool extends Tool {
 	private BufferedImage img;
 	private Graphics2D g;
 	
-	public BucketTool(PaintProperties properties){
-		super(properties);
+	public BucketTool(CanvasRepaintManager manager, PaintProperties properties){
+		super(manager, properties);
 	}
 
 	@Override

@@ -2,12 +2,19 @@ package neuhoff.paint;
 
 import java.awt.Graphics2D;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+@Singleton
 public abstract class Tool {
 
 	protected PaintProperties properties;
+	protected CanvasRepaintManager manager;
 	
-	public Tool(PaintProperties prprties){
+	@Inject
+	public Tool(CanvasRepaintManager mng, PaintProperties prprties){
 		properties = prprties;
+		manager = mng;
 	}
 	
 	abstract void mousePressed(Graphics2D graphics, int x, int y);

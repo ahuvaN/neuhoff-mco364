@@ -6,12 +6,12 @@ import java.awt.Graphics2D;
 
 public class PencilTool extends Tool {
 
-	public PencilTool(PaintProperties prprties) {
-		super(prprties);
+	public PencilTool(CanvasRepaintManager manager, PaintProperties prprties) {
+		super(manager, prprties);
 	}
 
-	private int x;
-	private int y;
+	private int x1;
+	private int y1;
 	private Graphics2D g;
 
 	@Override
@@ -20,8 +20,9 @@ public class PencilTool extends Tool {
 		g.setStroke(properties.getStroke());
 		g.setColor(properties.getColor());
 		g.fillOval(x, y, 1, 1);
-		this.x = x;
-		this.y = y;
+		manager.repaint(x, y, x+1, y+1);
+		x1 = x;
+		y1 = y;
 	}
 
 	@Override
@@ -33,9 +34,9 @@ public class PencilTool extends Tool {
 	public void mouseDragged(int x, int y) {
 
 		g.setColor(properties.getColor());
-		g.drawLine(this.x, this.y, x, y);
-		this.x = x;
-		this.y = y;
+		g.drawLine(x1, y1, x, y);
+		x1 = x;
+		y1 = y;
 	}
 
 	@Override

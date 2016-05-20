@@ -9,8 +9,8 @@ public class OvalTool extends Tool {
 	private int x1, x2, y1, y2, width, height;
 	private Graphics2D g;
 	
-	public OvalTool(PaintProperties properties){
-		super(properties);
+	public OvalTool(CanvasRepaintManager manager, PaintProperties properties){
+		super(manager, properties);
 	}
 	@Override
 	public void mousePressed(Graphics2D graphics, int x, int y) {
@@ -28,7 +28,7 @@ public class OvalTool extends Tool {
 		y2 = y;
 		width = Math.abs(x2 - x1);
 		height = Math.abs(y2 - y1);
-		g.drawOval(x1, y1, width, height);
+		g.drawOval(Math.min(x1, x2), Math.min(y1, y2), width, height);
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class OvalTool extends Tool {
 	public void drawPreview(Graphics2D g) {
 		g.setColor(properties.getColor());
 		g.setStroke(properties.getStroke());
-		g.drawOval(x1, y1, width, height);
+		g.drawOval(Math.min(x1, x2), Math.min(y1, y2), width, height);
 	}
 
 	public void setColor(Color c) {

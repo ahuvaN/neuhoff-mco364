@@ -6,8 +6,8 @@ import java.awt.Graphics2D;
 
 public class SquareTool extends Tool {
 
-	public SquareTool(PaintProperties prprties) {
-		super(prprties);
+	public SquareTool(CanvasRepaintManager manager,PaintProperties prprties) {
+		super(manager, prprties);
 	}
 
 	private int x1, x2, y1, y2, width, height;
@@ -29,7 +29,7 @@ public class SquareTool extends Tool {
 		y2 = y;
 		width = Math.abs(x2 - x1);
 		height = Math.abs(y2 - y1);
-		g.drawRect(x1, y1, width, height);
+		g.drawRect(Math.min(x1, x2), Math.min(y1, y2), width, height);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class SquareTool extends Tool {
 	public void drawPreview(Graphics2D g) {
 		g.setColor(properties.getColor());
 		g.setStroke(properties.getStroke());
-		g.drawRect(x1, y1, width, height);
+		g.drawRect(Math.min(x1, x2), Math.min(y1, y2), width, height);
 	}
 
 	public void setColor(Color c) {
